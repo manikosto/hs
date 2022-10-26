@@ -37,6 +37,7 @@ RUN pip install --upgrade pip
 # RUN pip install -r requirements.txt
 # RUN ls
 RUN pip install allure-pytest allure-python-commons webdriver-manager selenium==3.141.0 requests pytest
+RUN ls
 
 ENV TZ Europe/Moscow
 
