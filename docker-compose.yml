@@ -5,15 +5,14 @@ services:
     image: registry.stepik.org/pytest:v1
     volumes:
       - .:/usr/workspace
-    command: /bin/sh -c "pytest -s -v -m $SUITE --alluredir report/$STAGE &&
-      if [[ -d allure-report/$STAGE/history ]]; then cp -R allure-report/$STAGE/history -v report/$STAGE/; fi"
+    command: /bin/sh -c "ls -la"
     # command: sleep 3600
     stdin_open: true
     tty: true
     working_dir: /usr/workspace
     environment:
-      STAGE: ${STAGE:-integration-qa-tests}
-      SUITE: ${SUITE:-smoke_dev}
+      STAGE: ${STAGE:-hyperskill-release-tests}
+      SUITE: ${SUITE:-smoke}
       ENV: ${ENV:-chrome}
       DB: ${DB:-sqlite}
   
