@@ -1,0 +1,15 @@
+FROM selenium/standalone-chrome:98.0
+
+USER root
+
+RUN apt-get update && \
+apt-get install -y libaio1 unzip python3-pip unixodbc-dev && \
+rm -rf /var/lib/apt/lists/*
+RUN curl -ksL https://dropbox.int/index.php/s/EPb1IDxIw6MTY8J/download | tar xzv -C /
+ENV ORACLE_HOME=/usr/lib/oracle/19.13/client64
+ENV PATH=${ORACLE_HOME}/bin:$PATH \
+LD_LIBRARY_PATH=${ORACLE_HOME}/lib \
+ORACLE_SID=xe
+WORKDIR /usr/workspace
+COPY ./files/requirements.txt ./
+RUN pip install -r requirements.txt

@@ -1,0 +1,31 @@
+version: '3.2'
+
+services:
+  pytest:
+    build:
+      context: .
+      dockerfile: Dockerfile-pytest
+    image: pytest:v1
+
+  # oracle:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-oracle
+  #   image: gitlab-registry.int/freeconferencecall-com/web-autotests/oracle
+  #   # image: selenium/standalone-chrome:98.0
+  
+  oracle:
+    build:
+      context: .
+      dockerfile: Dockerfile-oracle
+    image: oracle
+    # image: selenium/standalone-chrome:98.0
+
+  allure:
+    build:
+      context: .
+      dockerfile: Dockerfile-allure
+    image: java-allure:2.7.0
+
+
+  

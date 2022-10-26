@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+echo "---> nginx start"
+echo "NGINX_PORT=$NGINX_PORT SSL_CONFIG=$SSL_CONFIG PROXY_CONFIG=$PROXY_CONFIG NGINX_SERVICE=$NGINX_SERVICE WEB_SERVICE=$WEB_SERVICE EMBER_SERVICE=$EMBER_SERVICE NGINX_CONF=$NGINX_CONF"
+echo "---> using template: $NGINX_CONF"
+echo $(pwd)
+
+envsubst '$NGINX_PORT $SSL_CONFIG $PROXY_CONFIG $NGINX_SERVICE $WEB_SERVICE $EMBER_SERVICE' < $NGINX_CONF > /etc/nginx/conf.d/service.conf
+
+exec nginx -g 'daemon off;'

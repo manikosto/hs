@@ -1,0 +1,23 @@
+FROM anapsix/alpine-java
+
+ENV ALLURE_VERSION=2.7.0 \
+    BUILD_PACKAGES="ca-certificates openssl unzip"
+
+ENV PATH="/allure/allure-2.7.0/bin:${PATH}"
+#   ALLURE_CONFIG="/allure-config/allure.properties"
+
+RUN mkdir /allure
+#   mkdir /allure-config
+
+RUN apk update && \
+    apk add ${BUILD_PACKAGES} && \
+    update-ca-certificates && \
+    rm -rf /var/cache/apk/*
+
+WORKDIR /usr/workspace/
+COPY ./files/allure-2.7.0.zip ./
+
+# RUN wget https://dl.bintray.com/qameta/generic/io/qameta/allure/allure/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.zip
+# RUN unzip allure-${ALLURE_VERSION}.zip -d /allure && rm allure-${ALLURE_VERSION}.zip
+RUN unzip allure-2.7.0.zip -d / && rm allure-2.7.0.zip
+

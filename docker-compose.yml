@@ -1,0 +1,83 @@
+version: '3.7'
+
+services:
+  pytest:
+    image: pytest:v1
+    volumes:
+      - .:/usr/workspace
+    command: /bin/sh -c "pip3 install -r requirements.txt &&
+      pytest -s -v -m $SUITE --alluredir report/$STAGE &&
+      if [[ -d allure-report/$STAGE/history ]]; then cp -R allure-report/$STAGE/history -v report/$STAGE/; fi"
+    # command: sleep 3600
+    stdin_open: true
+    tty: true
+    working_dir: /usr/workspace
+    environment:
+      STAGE: ${STAGE:-integration-qa-tests}
+      SUITE: ${SUITE:-smoke_dev}
+      ENV: ${ENV:-chrome}
+      DB: ${DB:-sqlite}
+  
+  oracle:
+    image: oracle
+    volumes:
+      - .:/usr/workspace
+    command: /bin/sh -c "pip3 install -r requirements.txt &&
+      pytest -s -v -m $SUITE --alluredir report/$STAGE &&
+      if [[ -d allure-report/$STAGE/history ]]; then cp -R allure-report/$STAGE/history -v report/$STAGE/; fi"
+    # command: sleep 3600
+    stdin_open: true
+    tty: true
+    working_dir: /usr/workspace
+    environment:
+      STAGE: ${STAGE:-integration-qa-tests}
+      SUITE: ${SUITE:-smoke_dev}
+      ENV: ${ENV:-chrome}
+      DB: ${DB:-sqlite}
+
+  allure:
+    image: java-allure:2.7.0
+    volumes:
+      - .:/usr/workspace
+    # command: /bin/sh -c "allure serve report/$$STAGE -p $$PORT"
+    # command: /bin/sh -c "allure generate --clean report/$$STAGE -o allure-report/$$STAGE"
+    command: /bin/sh -c "allure generate --clean report/$$STAGE -o allure-report/$$STAGE && allure open allure-report/$$STAGE -p $$PORT"
+    ports:
+      - "4444:4444"
+    stdin_open: true
+    tty: true
+    working_dir: /usr/workspace
+    environment:
+      STAGE: ${STAGE:-integration-qa-tests}
+      PORT: ${PORT:-4444}
+
+  allure-generate:
+    image: gitlab-registry.int/freeconferencecall-com/web-autotests/java-allure:2.7.0
+    volumes:
+      - .:/usr/workspace
+    command: /bin/sh -c "allure generate -c report/$$STAGE -o allure-report/$$STAGE"
+    stdin_open: true
+    tty: true
+    working_dir: /usr/workspace
+    environment:
+      STAGE: ${STAGE:-integration-qa-tests}
+
+  nginx:
+    image: jwilder/nginx-proxy:alpine
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./docker/nginx/root/etc/nginx/local-certs:/etc/nginx/certs
+      - ./docker/nginx/root/etc/nginx/conf.d/static-no-cache.conf.template:/etc/nginx/conf.d/static-no-cache.conf.template
+      - ./allure-report:/usr/share/nginx/html
+    command: /bin/sh -c "envsubst '$$NGINX_PORT $$SSL_CONFIG' < $$NGINX_CONF > /etc/nginx/conf.d/service.conf && exec forego start -r"
+    ports:
+      - "8088:8088"
+      - "443:443"
+    environment:
+      NGINX_PORT: 8088
+      NGINX_CONF: /etc/nginx/conf.d/static-no-cache.conf.template
+      # Params for proxy detection:
+      VIRTUAL_HOST: web.local
+      VIRTUAL_PORT: 8088
+
+

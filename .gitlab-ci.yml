@@ -1,0 +1,157 @@
+variables:
+  DOCKER_DRIVER: overlay2
+  REGISTRY: gitlab.int
+
+  PYTEST_IMAGE: $CI_REGISTRY_IMAGE/pytest:3.8.5-alpine3.12-selenium-1.0
+  ALLURE_IMAGE: $CI_REGISTRY_IMAGE/java-allure:2.7.0
+  GITLAB_API_IMAGE: gitlab-registry.int/freeconferencecall-com/freeconferencecall/gitlab-api:2.7.0
+
+  ALLURE_RUNTIME: $CI_REGISTRY_IMAGE/allure-runtime
+
+stages:
+  - ui-test
+  - deploy
+  - cleanup
+  - pages
+
+default:
+  image: $CI_REGISTRY/shared/registry/docker:19.03.5
+
+  services:
+    - name: $CI_REGISTRY/shared/registry/docker:dind-1.0
+      alias: docker
+
+  before_script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+# ==================================================== UI TEST ====================================================
+ui-test:
+  stage: ui-test
+  variables:
+    # SUITE: smoke_dev_one
+    # STAGE: fcc-qa
+  script:
+    # - if [ -d report ]; then ls report; fi
+    - docker run --rm -e STAGE -e SUITE -e BROWSER -e CI_COMMIT_REF_NAME -v $(pwd):/usr/workspace -w /usr/workspace $PYTEST_IMAGE /bin/sh -c
+        "pip install -r requirements.txt && pytest -s -v --browser=chrome_docker -m $SUITE --alluredir report/$STAGE || exit 0"
+    - docker pull $ALLURE_RUNTIME:latest || true
+    - echo $(docker image ls | grep $ALLURE_RUNTIME)
+    - |
+        if [ ! -z "`docker image ls | grep $ALLURE_RUNTIME`" ]; then
+          c_id=$(docker create $ALLURE_RUNTIME:latest)
+          docker cp $c_id:/usr/share/nginx/html/. $(pwd)/allure-report
+          docker rm $c_id
+        fi
+    - if [ -d allure-report ]; then ls allure-report; fi
+    - rm -rf allure-report/html
+    - if [ -d allure-report/$STAGE/history ]; then cp -R allure-report/$STAGE/history -v report/$STAGE/; fi
+    - docker run --rm -v $(pwd):/usr/workspace -w /usr/workspace $ALLURE_IMAGE allure generate -c report/$STAGE -o allure-report/$STAGE
+    - docker build
+        --cache-from $ALLURE_RUNTIME:latest
+        -t $ALLURE_RUNTIME:latest
+        -t $ALLURE_RUNTIME:$CI_PIPELINE_ID
+        -f docker/Dockerfile-allure-runtime .
+    - docker push $ALLURE_RUNTIME:latest
+    - docker push $ALLURE_RUNTIME:$CI_PIPELINE_ID
+    # - cd $(pwd)/report && if [ ! -f branches.txt ] || ! grep "$CI_COMMIT_REF_NAME$" branches.txt; then echo "https://freeconferencecall-com.pages.int/freeconferencecall/$STAGE/$CI_COMMIT_REF_NAME" >> branches.txt; fi
+    # - cp branches.txt ../allure-report
+  allow_failure: true
+  # when: delayed
+  # start_in: 4 minutes
+  # cache: # between jobs
+  #   key: ui-test
+  #   paths:
+  #     - report
+  # dependencies: []
+  # artifacts:
+  #   paths:
+  #   - allure-report
+  #   # - report
+  #   expire_in: 30 days
+  only:
+    refs:
+      - master
+      - /^.+_release$/
+    variables:
+      - $ENABLE_UI_TESTS == "true"
+
+
+# ==================================================== DEPLOY ====================================================
+.deploy_oc:
+  image: $CI_REGISTRY/shared/registry/openshift-client
+  services: []
+  stage: deploy
+  environment:
+    name: $STAGE
+    url: https://$STAGE-nginx-runtime-$OPENSHIFT_PROJECT.apps.$OPENSHIFT_DOMAIN
+  variables:
+    # GIT_STRATEGY: none
+    OPENSHIFT_SERVER: https://lgb3-oc-vm03.int:8443
+    OPENSHIFT_DOMAIN: lgb3-oc.int
+    OPENSHIFT_PROJECT: freeconferencecall-web
+    GITLAB_URL: https://gitlab-registry.int
+    DOCKER_EMAIL: support@freeconferencecall.com
+  before_script:
+  - |
+      if [ -f docker/deploy/stages/$STAGE/deploy.env ]; then
+        export $(grep -v '^#' docker/deploy/stages/$STAGE/deploy.env | xargs)
+      fi
+  - echo $CI_ENVIRONMENT_NAME
+  # login with the service account
+  - oc login $OPENSHIFT_SERVER --token=$OPENSHIFT_TOKEN --insecure-skip-tls-verify
+  # enter into our slides project on OpenShift
+  - oc project $OPENSHIFT_PROJECT
+  # set secrets to access gitlab-registry
+  - oc get secret gitlab-registry-autotests ||
+      oc create secret docker-registry gitlab-registry-autotests --docker-server=$GITLAB_URL --docker-username=$GITLAB_DEPLOY_TOKEN --docker-password=$GITLAB_DEPLOY_PASSWORD --docker-email=$DOCKER_EMAIL
+      # don't set default secrets, since they were already set in fcc project
+      # secrets mnually set in dc https://lgb3-oc-vm03.int:8443/console/project/freeconferencecall-web/edit/yaml?kind=DeploymentConfig&name=allure-nginx-runtime&group=apps.openshift.io&returnURL=
+      # template:
+      #   spec:
+      #     imagePullSecrets:
+      #     - name: gitlab-registry-autotests
+
+      # oc secrets link default gitlab-registry-autotests --for=pull
+  dependencies: []
+  only:
+    refs:
+      - master
+      - /^.+_release$/
+
+allure:deploy:
+  extends: .deploy_oc
+  environment:
+    name: $STAGE
+    url: http://allure-nginx-runtime-$OPENSHIFT_PROJECT.apps.$OPENSHIFT_DOMAIN/$STAGE/
+  script:
+  - NGINX_IMAGE="$ALLURE_RUNTIME:$CI_PIPELINE_ID"
+  - oc set image dc/allure-nginx-runtime allure-nginx-runtime=$NGINX_IMAGE
+  only:
+    refs:
+      - master
+      - /^.+_release$/
+    variables:
+      - $ENABLE_UI_TESTS == "true"
+
+
+# ==================================================== CLEANUP ====================================================
+.cleanup:
+  stage: cleanup
+  image:
+    name: $GITLAB_API_IMAGE
+    entrypoint: [""]
+  services: []
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+  - echo "skip before script"
+  dependencies: []
+
+general:cleanup:
+  extends: .cleanup
+  script:
+    - PRIVATE_TOKEN=$DEPLOY_USER_API_TOKEN PROJECT_URI=$PROJECT_URI /gitlab-api $CLEANUP_COMMAND
+  only:
+    variables:
+      - $CLEANUP_COMMAND != null
