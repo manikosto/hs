@@ -5,7 +5,7 @@ services:
     image: pytest:v1
     volumes:
       - .:/usr/workspace
-    command: /bin/sh -c "pip3 install -r requirements.txt &&
+    command: /bin/sh -c "
       pytest -s -v -m $SUITE --alluredir report/$STAGE &&
       if [[ -d allure-report/$STAGE/history ]]; then cp -R allure-report/$STAGE/history -v report/$STAGE/; fi"
     # command: sleep 3600
