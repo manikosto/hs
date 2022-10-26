@@ -4,7 +4,7 @@ services:
   pytest:
     image: registry.stepik.org/pytest:v1
     volumes:
-      - /usr/workspace
+      - ./usr/workspace
     command: /bin/sh -c "ls -la"
     # command: sleep 3600
     stdin_open: true
