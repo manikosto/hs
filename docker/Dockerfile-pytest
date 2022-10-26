@@ -31,7 +31,7 @@ RUN geckodriver --version
 RUN pip install --upgrade pip
 
 # install selenium
-RUN pip install selenium==3.141.0 dateutils requests
+# RUN pip install selenium==3.141.0 dateutils requests
 WORKDIR /usr/workspace
 COPY ./files/requirements.txt ./
 RUN pip install -r requirements.txt
