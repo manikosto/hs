@@ -35,6 +35,7 @@ RUN pip install --upgrade pip
 WORKDIR /usr/workspace
 COPY ./files/requirements.txt ./
 RUN pip install -r requirements.txt
+RUN ls
 # RUN pip install allure-pytest allure-python-commons webdriver-manager
 
 ENV TZ Europe/Moscow
