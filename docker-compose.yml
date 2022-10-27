@@ -4,7 +4,7 @@ services:
   pytest:
     image: registry.stepik.org/pytest:v1
     volumes:
-      - .:/usr/workspace
+      - .:/opt/buildagent/work/707b0cd56fdc5596
     command: /bin/sh -c "ls && pytest -s -v -m $SUITE --alluredir report/$STAGE &&
       if [[ -d allure-report/$STAGE/history ]]; then cp -R allure-report/$STAGE/history -v report/$STAGE/; fi"
     # command: sleep 3600
