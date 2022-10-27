@@ -33,7 +33,7 @@ RUN pip install --upgrade pip
 # install selenium
 # RUN pip install selenium==3.141.0 dateutils requests pytest
 WORKDIR /usr/workspace
-COPY ./* ./usr/workspace
+COPY ./* ./usr/temp
 # COPY ./files/requirements.txt ./
 RUN pip install -r requirements.txt
 ENV TZ Europe/Moscow
