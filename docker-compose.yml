@@ -10,7 +10,7 @@ services:
     # command: sleep 3600
     stdin_open: true
     tty: true
-    working_dir: /usr/workspace
+    working_dir: /opt/buildagent/work/707b0cd56fdc5596
     environment:
       STAGE: ${STAGE:-hyperskill-release-tests}
       SUITE: ${SUITE:-smoke}
