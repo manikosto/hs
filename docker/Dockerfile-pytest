@@ -33,7 +33,8 @@ RUN pip install --upgrade pip
 # install selenium
 RUN pip install selenium==3.141.0 dateutils requests pytest
 WORKDIR /usr/workspace
-COPY . ./
+# COPY ./files/requirements.txt ./
+ADD ./* /usr/workspace/
 # RUN pip install -r requirements.txt
 # RUN ls
 # RUN pip install allure-pytest allure-python-commons webdriver-manager selenium==3.141.0 requests pytest
