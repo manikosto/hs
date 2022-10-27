@@ -2,14 +2,14 @@ version: '3.7'
 
 services:
   pytest:
-    image: pytest:v1
-    # volumes:
-    #   - .:/user/temp
-    command: /bin/sh -c "ls -la && pwd"
+    image: registry.stepik.org/pytest:v1
+    volumes:
+      - .:/user/temp
+    command: /bin/sh -c "ls -la"
     # command: sleep 3600
     stdin_open: true
     tty: true
-    working_dir: .:/user/temp
+    working_dir: /usr/workspace/
     environment:
       STAGE: ${STAGE:-hyperskill-release-tests}
       SUITE: ${SUITE:-smoke}
