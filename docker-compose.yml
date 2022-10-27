@@ -10,7 +10,7 @@ services:
     # command: sleep 3600
     stdin_open: true
     tty: true
-    working_dir: ./
+    working_dir: /usr/workspace/
     environment:
       STAGE: ${STAGE:-hyperskill-release-tests}
       SUITE: ${SUITE:-smoke}
