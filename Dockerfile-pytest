@@ -1,5 +1,4 @@
 FROM python:3.8.5-alpine3.12
-
 # update apk repo
 RUN echo "https://dl-4.alpinelinux.org/alpine/v3.10/main" >> /etc/apk/repositories && \
     echo "https://dl-4.alpinelinux.org/alpine/v3.10/community" >> /etc/apk/repositories
@@ -33,7 +32,8 @@ RUN pip install --upgrade pip
 # install selenium
 # RUN pip install selenium==3.141.0 dateutils requests pytest
 WORKDIR /usr/workspace
-COPY ./* ./
+COPY ./ ./
+# COPY ./files/requirements.txt ./
 RUN pip install -r requirements.txt
 ENV TZ Europe/Moscow
 
