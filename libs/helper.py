@@ -256,7 +256,7 @@ class Helper:
         Args:
             cookies_name ([text]): [Cookies file name]
         """
-        pickle.dump(self.driver.get_cookies(), open("/usr/workspace/data/temporary/cookies/" + cookies_name + ".pkl", "wb"))
+        pickle.dump(self.driver.get_cookies(), open("/data/temporary/cookies/" + cookies_name + ".pkl", "wb"))
 
     def load_cookies(self, link=None, cookies_name="None"):
         """[This methods implements cookies into the browser]
@@ -266,7 +266,7 @@ class Helper:
             cookies_name (str, optional): [Coockies file name]. Defaults to "None".
         """
         cookies = pickle.load(
-            open("/usr/workspace/data/temporary/cookies/" + cookies_name + ".pkl", "rb"))
+            open("/data/temporary/cookies/" + cookies_name + ".pkl", "rb"))
         self.driver.delete_all_cookies()
         for cookie in cookies:
             if 'expiry' in cookie:
@@ -280,7 +280,7 @@ class Helper:
         Returns:
             [text]: [Password]
         """
-        with open("/usr/workspace/data/passwords/"+os.environ["STAGE"]+".txt", "r") as cred:
+        with open("/data/passwords/"+os.environ["STAGE"]+".txt", "r") as cred:
             return cred.read()
     
     def get_info_from_file(self):
@@ -289,7 +289,7 @@ class Helper:
         Returns:
             [text]: [Password]
         """
-        with open("/usr/workspace/data/pswd/meeting_url.txt", "r") as cred:
+        with open("/data/pswd/meeting_url.txt", "r") as cred:
             return cred.read()
 
     
