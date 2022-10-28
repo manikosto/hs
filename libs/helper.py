@@ -257,7 +257,7 @@ class Helper:
             cookies_name ([text]): [Cookies file name]
         """
         pickle.dump(self.driver.get_cookies(), open(
-            os.getcwd() + "/data/temporary/cookies/" + cookies_name + ".pkl", "wb"))
+            os.getcwd() + "./data/temporary/cookies/" + cookies_name + ".pkl", "wb"))
 
     def load_cookies(self, link=None, cookies_name="None"):
         """[This methods implements cookies into the browser]
@@ -267,7 +267,7 @@ class Helper:
             cookies_name (str, optional): [Coockies file name]. Defaults to "None".
         """
         cookies = pickle.load(
-            open(os.getcwd() + "/data/temporary/cookies/" + cookies_name + ".pkl", "rb"))
+            open(os.getcwd() + "./data/temporary/cookies/" + cookies_name + ".pkl", "rb"))
         self.driver.delete_all_cookies()
         for cookie in cookies:
             if 'expiry' in cookie:
