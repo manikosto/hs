@@ -35,8 +35,6 @@ report
 allure-report
 subscriptions.txt
 geckodriver.log
-/data/temporary/cookies*
-/data/temporary/passwords*
-/data/urls/*
+
 
 
