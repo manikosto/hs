@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  pytest1:
+  pytest:
     image: pytest:v1
     volumes:
       - .:/usr/temp
