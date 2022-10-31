@@ -1,8 +1,8 @@
 version: '3.7'
 
 services:
-  pytest:
-    image: registry.stepik.org/pytest:v1
+  pytest1:
+    image: pytest:v1
     volumes:
       - .:/usr/temp
     command: /bin/sh -c "pytest -s -v -m $SUITE --alluredir report/$STAGE &&
@@ -10,7 +10,7 @@ services:
     # command: sleep 3600
     stdin_open: true
     tty: true
-    working_dir: /usr/workspace
+    working_dir: /usr/temp
     environment:
       STAGE: ${STAGE:-hyperskill-release-tests}
       SUITE: ${SUITE:-smoke}
