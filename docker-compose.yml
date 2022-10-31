@@ -5,7 +5,7 @@ services:
     image: registry.stepik.org/pytest:v1
     volumes:
       - .:/usr/temp
-    command: /bin/sh -c "ls * && data && ls data/temporary && pytest -s -v -m $SUITE --alluredir report/$STAGE &&
+    command: /bin/sh -c "pytest -s -v -m $SUITE --alluredir report/$STAGE &&
       if [[ -d allure-report/$STAGE/history ]]; then cp -R allure-report/$STAGE/history -v report/$STAGE/; fi"
     # command: sleep 3600
     stdin_open: true
