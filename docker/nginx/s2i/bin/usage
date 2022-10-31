@@ -1,7 +1,0 @@
-#!/bin/sh -e
-cat <<EOF
-This is the nginx-proxy image.
-
-You can then run the resulting image via:
-docker run -e NGINX_PORT=3000 -e WEB_PORT=8080 -e EMBER_PORT=4201 -p 3000:3000 nginx-proxy
-EOF
