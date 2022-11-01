@@ -31,12 +31,13 @@ class Helper:
             [Element]: [Highlight of element on Allure screenshot]
         """
         try:
+            self.wait_element_is_located(xpath_locator)
             self.driver.execute_script(
                 "function getElementByXpath(path) {return document.evaluate(path,document,null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;}console.log((getElementByXpath(\"" + xpath_locator + "\").style.border=\"3px solid "+str(color)+"\"));")
         except:
-            # raise Exception("Element was not found to be highlight")
+            raise Exception("Element was not found to be highlight")
             # return Exception
-            return False
+            # return False
 
     def highlight_element_by_id(self, id):
         """[This method finds element by id and adds CSS border on Allure screenshot]
@@ -372,7 +373,7 @@ class Helper:
     def wait_element_clickable(self, xpath_locator):
         elem = self.wait.until(
             EC.element_to_be_clickable((By.XPATH, xpath_locator)))
-        elem.click()
+        # elem.click()
 
     def wait_locate_element(self, xpath_locator):
         self.wait.until(EC.visibility_of_element_located(
@@ -380,4 +381,8 @@ class Helper:
 
     def wait_invisible_element(self, xpath_locator):
         self.wait.until(EC.invisibility_of_element_located(
+            (By.XPATH, xpath_locator)))
+            
+    def wait_element_is_located(self, xpath_locator):
+        self.wait.until(EC.presence_of_element_located(
             (By.XPATH, xpath_locator)))

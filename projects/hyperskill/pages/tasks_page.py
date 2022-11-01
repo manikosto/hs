@@ -16,10 +16,15 @@ class TasksPage(BasePage):
         self.helper.get_screenshot("Page is opened") # Действие 2
     
     def login_in_account(self):
-        self.helper.send_keys_in_element_by_xpath(self.locators.EMAIL_FIELD, "auto@test.hyperskill.org")
-        self.helper.send_keys_in_element_by_xpath(self.locators.PASSWORD_FIELD, "512")
+        self.helper.send_keys_in_element_by_xpath(self.locators.EMAIL_FIELD, self.data.ACCOUNT_LOGIN)
+        self.helper.send_keys_in_element_by_xpath(self.locators.PASSWORD_FIELD, self.data.ACCOUNT_PASSWORD)
         self.helper.click_on_element_by_xpath(self.locators.SUBMIT_BUTTON)
-        self.helper.get_screenshot("example")
+        self.helper.get_screenshot("Credentials are entered")
+    
+    def check_track_page(self):
+        time.sleep(3)
+        self.helper.highlight_element_by_xpath(self.locators.ALL_TRACKS_BUTTON)
+        self.helper.get_screenshot("Credentials are entered")
     
     def open_next_section(self):
         self.helper.get_scroll_to_bottom()

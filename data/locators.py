@@ -15,10 +15,12 @@ class Locators:
     VERIFY_TO_SKIP_BUTTON = "(//button[text()=' Verify to skip '])[1]"
     SECTION_COUNTER = "//span[contains(@class, 'text-secondary')]"
     
+    # Login page
     HOME_TITLE = "Tracks – JetBrains Academy — Learn programming by building your own apps"
     LOGO = "(//a[@href='/tracks'])[1]"
     CARD = "(//div[contains(@class, 'card')])[9]"
     EMAIL_FIELD = "//input[@type='email']"
     PASSWORD_FIELD = "//input[@type='password']"
     SUBMIT_BUTTON = "//button[@type='submit']"
+    ALL_TRACKS_BUTTON = "(//a[@href='/tracks'])[3]"
 

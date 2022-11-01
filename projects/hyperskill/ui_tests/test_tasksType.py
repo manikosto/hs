@@ -25,26 +25,28 @@ class Test_Landing:
         self.driver.get(self.links.login_page)
         
 
-    @allure.title("Check successfull integration test")
-    @allure.description("Check successfull integration test using UI, DB, API")
+    @allure.title("Login in account")
+    @allure.description("Check successfull login in account")
     @allure.severity("Critical")
     @allure.link(url="", name="")
     @pytest.mark.smoke
-    def test_successfull_integration_test(self):
+    def test_successfull_login_test(self):
 
-        with allure.step("UI step demonstration"):
+        with allure.step("Open login page"):
             self.tasksPage.open_page()
         
-        with allure.step("UI step demonstration"):
+        with allure.step("Enter credentials"):
             self.tasksPage.login_in_account()
             self.helper.save_cookies("hyperskill_release")
-            time.sleep(3)
+        
+        with allure.step("Check track page is opened"):
+            self.tasksPage.check_track_page()
     
     @allure.title("Check successfull integration test")
     @allure.description("Check successfull integration test using UI, DB, API")
     @allure.severity("Critical")
     @allure.link(url="", name="")
-    @pytest.mark.smoke
+    @pytest.mark.smoke1
     def test_theory_task(self):
 
         with allure.step("UI step demonstration"):
