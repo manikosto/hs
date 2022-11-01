@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   pytest:
-    image: registry.stepik.org/pytest:v1
+    image: registry.stepik.org/pytest:v2
     volumes:
       - .:/usr/temp
     command: /bin/sh -c "pytest -s -v -m $SUITE --alluredir report/$STAGE &&
