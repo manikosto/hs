@@ -46,7 +46,7 @@ class Test_Landing:
     @allure.description("Check successfull integration test using UI, DB, API")
     @allure.severity("Critical")
     @allure.link(url="", name="")
-    @pytest.mark.smoke1
+    @pytest.mark.x
     def test_theory_task(self):
 
         with allure.step("UI step demonstration"):
